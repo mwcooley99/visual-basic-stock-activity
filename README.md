@@ -24,3 +24,11 @@ The script expects the data to have columns values for the following data in ord
 ### Other formatting
 - Date: YearMoDa (e.g. Jan 02, 1994 --> 19940102)
 - The data does not need to be sorted in any particular way
+
+## Output from sample file:
+### 2016 Results
+![2016_results](Images-Solution/2016_results.png)
+### 2015 Results
+![2015_results](Images-Solution/2015_results.png)
+### 2014 Results
+![2014_results](Images-Solution/2014_results.png)

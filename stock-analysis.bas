@@ -1,39 +1,11 @@
 Attribute VB_Name = "Module1"
-Sub SortColumns(wksht As Worksheet)
-    'Sort the data By ticker and then by date
-    Dim data As Range
-    'Set data = wksht.Range("a2").CurrentRegion
-    'With wksht.Sort _
-            .SortFields.Add Key:=Range("A1"), Order:=xlAscending _
-            .SortFields.Add Key:=Range("B1"), Order:=xlAscending _
-            .SetRange wksht.Range("A:G") _
-            .Header = xlYes _
-            .Apply _
-        End With
-    With wksht.Range("A:G")
-    .Cells.Sort Key1:=.Columns("A"), Order1:=xlAscending, _
-                Key2:=.Columns("B"), Order2:=xlAscending, _
-                Orientation:=xlTopToBottom, Header:=xlYes
-    End With
-End Sub
-
-Sub SetHeader(wksht As Worksheet)
-    ' Set the headers for the analysis
-    wksht.Range("I1").Value = "Ticker"
-    wksht.Range("J1").Value = "Yearly Change"
-    wksht.Range("K1").Value = "Percent Change"
-    wksht.Range("L1").Value = "Total Stock Volume"
-End Sub
-
-Sub ClearCells(wksht As Worksheet)
-    wksht.Range("I1:P10000").Value = ""
-    wksht.Range("I1:P10000").Interior.ColorIndex = 0
-    
-End Sub
-
 Sub Main()
     Dim wbk As Workbook, wksht As Worksheet, sheetCount As Integer
+    
+    ' Set the name of the workbook the script will run on
     Set wbk = Application.Workbooks("Multiple_year_stock_data.xlsm")
+    
+    ' Run the script for every sheet in wbk
     sheetCount = wbk.Worksheets.Count
     For i = 1 To sheetCount
         Set wksht = wbk.Worksheets(i)
@@ -44,18 +16,28 @@ Sub Main()
     Next i
 End Sub
 
-Sub WriteRows(wksht As Worksheet, currTicker As String, writeRow As Long, initalClose As Double, endClose As Double, volume As Double)
-    ' Currently doesn't work because initalClose always comes through as EMPTY
-    Dim change As Double
-    MsgBox ("currTicker: " & currTicker & " Initial close: " & TypeName(initialClose) & " writeRow: " & writeRow & " endClose: " & endClose & " volume: " & volume)
-    change = endClose - initialClose
-    'Debug.Print ("Change: " & change)
-    'Debug.Print (endClose)
-    'Debug.Print ("Initial: " & initialClose)
-    wksht.Range("I" & writeRow).Value = currTicker
-    wksht.Range("J" & writeRow).Value = change
-    wksht.Range("K" & writeRow).Value = Round(change / initialClose, 2)
-    wksht.Range("L" & writeRow).Value = Round(volume, 0)
+Sub SortColumns(wksht As Worksheet)
+    'Sort the data By ticker and then by date
+    Dim data As Range
+    With wksht.Range("A:G")
+    .Cells.Sort Key1:=.Columns("A"), Order1:=xlAscending, _
+                Key2:=.Columns("B"), Order2:=xlAscending, _
+                Orientation:=xlTopToBottom, Header:=xlYes
+    End With
+End Sub
+
+Sub ClearCells(wksht As Worksheet)
+    ' Clears the cells from any previous run
+    wksht.Range("I1:P10000").Value = ""
+    wksht.Range("I1:P10000").Interior.ColorIndex = 0
+End Sub
+
+Sub SetHeader(wksht As Worksheet)
+    ' Set the headers for the analysis
+    wksht.Range("I1").Value = "Ticker"
+    wksht.Range("J1").Value = "Yearly Change"
+    wksht.Range("K1").Value = "Percent Change"
+    wksht.Range("L1").Value = "Total Stock Volume"
 End Sub
 
 Sub Run(wksht As Worksheet)
@@ -94,9 +76,10 @@ Sub Run(wksht As Worksheet)
                 wksht.Range("J" & writeRow).Interior.ColorIndex = 3
             End If
             
-            'Calculate and format the percentage rounded to the neares two dec (for the %)
+            ' Calculate and forma the percentage rounded to the neares two dec (for the %)
+            ' Check to see if the initalClose = 0 to avoid dividing by 0
             If initialClose = 0 Then
-                percentChange = 0#
+                percentChange = 0
             Else:
                 percentChange = Round(change / initialClose, 4)
             End If
@@ -146,7 +129,7 @@ Sub Run(wksht As Worksheet)
     wksht.Range("P1").Value = "Value"
     wksht.Range("N2").Value = "Greatest % Increase"
     wksht.Range("N3").Value = "Greatest % Decrease"
-    wksht.Range("N4").Value = "Greatest Total Volumn"
+    wksht.Range("N4").Value = "Greatest Total Volume"
     
     ' The format for the percentages is different
     For i = 0 To 1
@@ -155,8 +138,13 @@ Sub Run(wksht As Worksheet)
         wksht.Range("P" & i + 2).NumberFormat = "0.00%"
     Next i
     
+    ' Write the greatest volume
     wksht.Range("O4").Value = greatestNames(i)
     wksht.Range("P4").Value = greatestValues(i)
+    
+    ' Autofit the analysis columns
+    wksht.Columns("I:P").AutoFit
+    
     
 End Sub
 
