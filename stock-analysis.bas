@@ -28,8 +28,8 @@ End Sub
 
 Sub ClearCells(wksht As Worksheet)
     ' Clears the cells from any previous run
-    wksht.Range("I1:P10000").Value = ""
-    wksht.Range("I1:P10000").Interior.ColorIndex = 0
+    wksht.Range("I:P").ClearContents
+    wksht.Range("I:P").ClearFormats
 End Sub
 
 Sub SetHeader(wksht As Worksheet)
